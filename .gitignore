@@ -1,0 +1,4 @@
+test.asm
+*.o
+*.bin
+*.out
