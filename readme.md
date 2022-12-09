@@ -2,5 +2,5 @@
 
 ## program description :
 * 
-* 
+* AND AX,4H
 * 
