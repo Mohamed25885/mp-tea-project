@@ -2,3 +2,4 @@ test.asm
 *.o
 *.bin
 *.out
+x64.inc
