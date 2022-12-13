@@ -1,5 +1,5 @@
 %include 'macros.inc'
-%include 'file_handler.asm'
+
 global _start
 section .data
     filename:  db  './dummy.bin',0
@@ -7,13 +7,16 @@ section .data
 
 section .bss
     text_buffer: resb 9
-    text_count: resb 1024
+    text_count: resq 1
+    file_descriptor: resq 1
 section .text
 
 _start:
-    
-    mov r10, filename
+    call _openFile
     call _countFileChars
-    ; exit
+    
+    
+    call _closeFile
     exit 0
 
+%include 'file_handler.asm'

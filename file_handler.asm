@@ -1,32 +1,14 @@
 
-;input fileName in r10
-;return r11 count
+
 _countFileChars:
     push r10
     push r9
 
-    ; open the file
-    mov rax, 2 ;sys_open(file_name, flags, mode)
-    mov rdi, r10
-    mov rsi, 0x400 ;O_APPEND
-    mov rdx, 0644 ; rw-r--r--
-    syscall
-
-    cmp rax, 0
-    jne continue
-     
-    ; error fd is null
-    mov rax, 60
-    mov rdi, 1
-    syscall
-
-
-    continue:
-
-    push rax ;to pop it later while closing the fd
     xor r10, r10
+    mov rax, qword[file_descriptor]
 
-    while:
+
+    _while_countFileChars:
         mov r9, rax
         mov rdi, rax ;copying fd (assuming it's opened) to rdi
         mov rsi, text_buffer
@@ -35,24 +17,39 @@ _countFileChars:
         syscall
 
         cmp  rax, 1
-        jl endWhile
+        jl _endWhile_countFileChars
         inc r10 
 
         mov rax, r9
-        jmp while
+        jmp _while_countFileChars
 
-    endWhile:
+    _endWhile_countFileChars:
     
-    ; close file
-    mov rax, 3
-    pop rdi
-    syscall
 
-
-    mov r11, r10
+   mov qword[text_count], r10
 
     pop r9
     pop r10
     ret
    
    
+_openFile:
+    ; open the file
+    mov rax, 2 ;sys_open(file_name, flags, mode)
+    mov rdi, filename
+    mov rsi, 0x400 ;O_APPEND
+    mov rdx, 0644 ; rw-r--r--
+    syscall
+    mov qword[file_descriptor], rax
+    cmp qword[file_descriptor], 0
+    jne _return_openFile 
+    exit 1
+    _return_openFile:
+    ret
+
+_closeFile:
+    ; close file
+    mov rax, 3
+    mov rdi, qword[file_descriptor]
+    syscall
+    ret
