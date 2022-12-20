@@ -26,7 +26,7 @@ _countFileChars:
     _endWhile_countFileChars:
     
 
-   mov qword[text_count], r10
+   mov qword[text_total], r10
 
     pop r9
     pop r10
@@ -37,8 +37,8 @@ _openFile:
     ; open the file
     mov rax, 2 ;sys_open(file_name, flags, mode)
     mov rdi, filename
-    mov rsi, 0x400 ;O_APPEND
-    mov rdx, 0644 ; rw-r--r--
+    mov rsi, 2 ;O_APPEND
+    mov rdx, 0666 ; rw-r--r--
     syscall
     mov qword[file_descriptor], rax
     cmp qword[file_descriptor], 0
@@ -49,7 +49,36 @@ _openFile:
 
 _closeFile:
     ; close file
-    mov rax, 3
+    mov rax, 3 ;sys_close(fd)
     mov rdi, qword[file_descriptor]
     syscall
+    ret
+
+
+_readFromToPosFile:
+    push r11
+    mov r11, qword[text_count]
+    sub r11, qword[text_offset] ;char count = text_count - text_offset
+    
+    mov rdi, qword[file_descriptor] ;file_descriptor
+    mov rsi, text_buffer
+    mov rdx, r11 ; count
+    mov r10, qword[text_offset] ;offset
+    mov rax, 17 ;sys_pread64(fd, *buffer, count,offset)
+    syscall
+    pop r11
+    ret
+
+_writeFromToPosFile:
+    push r11
+    mov r11, qword[text_count]
+    sub r11, qword[text_offset] ;char count = text_count - text_offset
+    
+    mov rdi, qword[file_descriptor] ;file_descriptor
+    mov rsi, text_buffer
+    mov rdx, r11 ; count
+    mov r10, qword[text_offset] ;offset
+    mov rax, 18 ;sys_pread64(fd, *buffer, count,offset)
+    syscall
+    pop r11
     ret
