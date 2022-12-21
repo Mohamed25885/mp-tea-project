@@ -21,3 +21,22 @@ _closeFile:
     mov ebx, [fd_in]
     int  0x80 
     ret
+
+file_dec_text:
+
+    call _open_and_read_file
+    push info  
+    call stringlen
+	pop ecx
+	push info
+	push eax
+	call decode_b64
+	add esp, 8
+	push ebx
+	push eax
+	call print
+
+   call _closeFile 
+
+	call exit
+	ret
