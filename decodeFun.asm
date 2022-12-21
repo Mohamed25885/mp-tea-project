@@ -2,7 +2,7 @@
 
 decodeFun:
 
-    push ebp		
+  push ebp		
 	mov ebp, esp
 	sub esp, 8
 	mov eax, [ebp + 8]	
@@ -38,13 +38,3 @@ decodeFun:
 	mov eax, dword [ebp -8]
 	sub dword [ebp - 4], eax
 	push dword [ebp-4]
-
-stop:
-	call exit
-	ret
-
-exit:
-	mov ebx, 0
-	mov eax, 1
-	int 80h		; exit syscall
-	ret
