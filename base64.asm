@@ -45,3 +45,7 @@ stringcmp:
 	mov ebx, dword [ebp + 8]		; If strings are equal eax contains 0 and 1 if they aren't
 	xor ecx, ecx
 	xor edx, edx
+
+stop:
+	call exit
+	ret

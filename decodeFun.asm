@@ -59,7 +59,22 @@ decodeFun:
 	xor ecx, ecx
 	dec ebx	
 
-stop:
-	call exit
-	ret
 
+  dec_loop:
+	cmp byte [ebx], '='
+	jne pad_length_found
+	dec ebx
+	inc ecx
+	jmp dec_loop
+
+  pad_length_found:
+	mov dword [ebp - 8], ecx
+	push dword [ebp - 4]
+	call allocate_mem
+	dec dword [ebp - 4]	
+	pop ebx
+	mov esi, [ebp + 12]
+	mov edi, [mem_start]
+	mov eax, dword [ebp -8]
+	sub dword [ebp - 4], eax
+	push dword [ebp-4]
