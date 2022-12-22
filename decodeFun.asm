@@ -78,3 +78,68 @@ decodeFun:
 	mov eax, dword [ebp -8]
 	sub dword [ebp - 4], eax
 	push dword [ebp-4]
+
+	decoding_loop:
+	cmp dword [esp], 0
+	je decoded
+	mov eax, 0
+	mov ebx, eax
+	mov ecx, ebx
+	mov edx, ecx
+	mov al, byte [esi]
+	mov bl, byte [esi + 1]
+	mov cl, byte [esi + 2]
+	mov dl, byte [esi + 3]
+	push eax
+	push b64_chars
+	call find_c_in_s
+	add esp, 8
+	push eax
+	push ebx
+	push b64_chars
+	call find_c_in_s
+	add esp, 8
+	mov ebx, eax
+	push ecx
+	push b64_chars
+	call find_c_in_s
+	add esp, 8
+	mov ecx, eax
+	push edx
+	push b64_chars
+	call find_c_in_s
+	add esp, 8
+	mov edx, eax
+	pop eax
+	shl eax, 18
+	shl ebx, 12
+	shl ecx, 6
+	or eax, ebx
+	or eax, ecx
+	or eax, edx
+	mov ebx, eax
+	shr ebx, 16
+	mov byte [edi], bl
+	inc edi
+	dec dword [esp]
+	cmp dword [esp], 0
+	je decoded
+	mov byte [edi], ah
+	inc edi
+	dec dword [esp]
+	cmp dword [esp], 0
+	je decoded
+	mov byte [edi], al
+	inc edi
+	dec dword [esp]
+	add esi, 4
+	jmp decoding_loop
+    
+decoded:
+	pop ebx
+	inc dword [ebp - 4]
+	mov byte [edi], 0Ah
+	mov ebx, dword [ebp - 4]
+	mov eax, dword [mem_start]
+	leave
+	ret
