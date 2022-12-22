@@ -1,11 +1,43 @@
-SECTION .data
+dec_text:
+        push dword [ebp + 16]                   ; base address of string
+        call stringlen
+        pop ecx
+	push dword [ebp + 16]
+	push eax
+	call decode_b64
+	add esp, 8
+	mov [out_info], eax
+	mov [count], ebx
 
 
-SECTION .text
+	cmp dword [ebp + 20], 0
+	je _print_output_to_screen_dec_text
 
-global _start
+	push out_param
+	push dword [param_len]
+	push dword [ebp + 20]
+	call stringcmp
+	cmp eax, 0			; checking if text param is provided
+	je _pipe_output_dec_text
 
-_start:
+	_print_output_to_screen_dec_text:
+	mov eax, [out_info]
+	mov ebx, [count]
+	
+	push ebx
+	push eax
+	call print
+	jmp _return_file_dec_text_fun
+     ; close the file
+    _pipe_output_dec_text:
+		
+		call _print_in_file
+		
+
+	_return_file_dec_text_fun:
+	call exit
+	ret
+
 
 decodeFun:
 
@@ -31,8 +63,3 @@ stop:
 	call exit
 	ret
 
-exit:
-	mov ebx, 0
-	mov eax, 1
-	int 80h		; exit syscall
-	ret

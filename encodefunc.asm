@@ -1,11 +1,43 @@
- .data
+enc_text:			; encoding routine if text is provided
+	push dword [ebp + 16]			; base address of string
+	call stringlen
+	pop ecx
+	push dword [ebp + 16]
+	push eax
+	call encode_b64
+	add esp, 12
+
+	mov [out_info], eax
+	mov [count], ebx
 
 
-.text
+	cmp dword [ebp + 20], 0
+	je _print_output_to_screen_enc_text
 
-global _start
+	push out_param
+	push dword [param_len]
+	push dword [ebp + 20]
+	call stringcmp
+	cmp eax, 0			; checking if text param is provided
+	je _pipe_output_enc_text
 
-_start:
+	_print_output_to_screen_enc_text:
+	mov eax, [out_info]
+	mov ebx, [count]
+	
+	push ebx
+	push eax
+	call print
+	jmp _return_file_enc_text_fun
+     ; close the file
+    _pipe_output_enc_text:
+		
+		call _print_in_file
+		
+
+	_return_file_enc_text_fun:
+	call exit
+	ret
 
 
 encodefunc:
