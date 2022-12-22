@@ -40,3 +40,23 @@ file_dec_text:
 
 	call exit
 	ret
+
+file_enc_text:
+
+    call _open_and_read_file
+    push info  
+    call stringlen
+	pop ecx
+	push info
+	push eax
+	call encode_b64
+	add esp, 12
+	push ebx
+	push eax
+	call print
+
+     ; close the file
+    call _closeFile 
+
+	call exit
+	ret
