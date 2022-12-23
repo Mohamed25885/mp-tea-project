@@ -1,4 +1,4 @@
-# Tiny (TEA) encryption and decryption program 
+# Tiny (TEA) encodeion and decodeion program 
 
 ## Program Description: using base64 to encode and decode string
 
@@ -12,8 +12,8 @@
 
 | Arg | Description                                                          |
 | --- | -------------------------------------------------------------------- |
-| -e  | to encrypt text                                                      |
-| -d  | to decrypt text                                                      |
+| -e  | to encode text                                                      |
+| -d  | to decode text                                                      |
 | -t  | to pass the text from the standard input                             |
 | -f  | to pass the file path from which the text is be used                 |
 | -o  | (optional) to pass a file path to which the processed text is stored |
@@ -21,7 +21,10 @@
 
 ### **Usage**
 ``` ./base64 -e -t "hello" ```
-- to encrypt text from stdin and print the result in the stdout
+- to encode text from stdin and print the result in the stdout
 
 ``` ./base64 -e -t "hello" -o "./hello.bin"  ```
-- to encrypt text from stdin and store the result in 'hello.bin' file
+- to encode text from stdin and store the result in 'hello.bin' file
+
+``` ./base64 -d -f ./hello.bin ```
+- to decode text from 'hello.bin' and print the result in the stdout
