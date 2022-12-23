@@ -1,7 +1,30 @@
+; NASM x86 asm
+
+SECTION .data
+inv_args db 'Invalid Parameters. Try ./base64 --help', 0Ah, 0h
+inv_args_len dd 40
+help_args db '-e to encode', 0Ah , '-d to decode' , 0Ah, '-f <path to file> to operate on file' , 0Ah, '-t <text> to operate on text', 0Ah, 0h
+help_args_len dd 92
+help_param db '--help', 0h
+help_param_len dd 7
+encod_param db '-e',0h
+param_len dd 3
+decod_param db '-d', 0h
+text_param db '-t', 0h
+file_param db '-f', 0h
+out_param db '-o', 0h
+b64_chars db 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/', 0h
+mem_start dd 0h
+file_desc dd 0h
+msg db 'Welcome to Tutorials Point'
+len equ  $-msg
+
 section .bss
-    fd_out resb 1
     fd_in  resb 1
+    fd_out  resb 1
     info resb  1024
+    out_info resb  1024
+    count resb  1024
 
 SECTION .text
 
@@ -9,10 +32,10 @@ global _start
 
 _start:
 	mov ebp, esp
-	cmp dword [ebp], 4		; checking the number of arguements passed to the application
-	je args_correct
 	cmp dword [ebp], 2
 	je help_func
+	cmp dword [ebp], 6		; checking the number of arguements passed to the application
+	jle args_correct
 
 invalid:				; executed if invalid arguements are passed to the application
 	push dword [inv_args_len]	; length of data to print
@@ -45,7 +68,7 @@ stringcmp:
 	mov ebx, dword [ebp + 8]		; If strings are equal eax contains 0 and 1 if they aren't
 	xor ecx, ecx
 	xor edx, edx
-	
+
 stringcmp_loop:
 	mov cl, byte [eax]
 	mov dl, byte [ebx]
@@ -142,6 +165,62 @@ args_correct:
 	cmp eax, 0			; checking here to see if to decode
 	je dec_routine
 	jmp invalid
-stop:
+
+enc_routine:
+	push text_param ;-t
+	push dword [param_len]
+	push dword [ebp + 12]
+	call stringcmp
+	add esp, 12
+	cmp eax, 0			; checking if text param is provided
+	je enc_text
+	push file_param ; -f
+	push dword [param_len]
+	push dword [ebp + 12]
+	call stringcmp
+	add esp, 12
+	cmp eax, 0			; checking if text param is provided
+	je file_enc_text
+	jmp invalid
+
+dec_routine:
+    push text_param
+    push dword [param_len]
+    push dword [ebp + 12]
+    call stringcmp
+    add esp, 12
+	cmp eax, 0
+	je dec_text
+    push file_param
+    push dword [param_len]
+    push dword [ebp + 12]
+    call stringcmp
+    add esp, 12
+	cmp eax, 0
+	je file_dec_text
+	jmp invalid
+
+
+help_func:
+	mov ebx, [ebp + 8]
+	push help_param
+	push dword [help_param_len]
+	push ebx
+	call stringcmp
+	add esp, 12
+	cmp eax, 0
+	jne invalid
+	push dword [help_args_len]
+	push help_args
+	call print
+	add esp, 12
 	call exit
 	ret
+
+stop:		; Something is not right, Size too high
+	call exit
+	ret
+	
+%include "encodeFunc.asm"
+%include "decodeFun.asm"
+%include "file_handler.asm"
