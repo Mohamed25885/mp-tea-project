@@ -12,8 +12,8 @@ _open_and_read_file:
 
     mov eax, 3
     mov ebx, [fd_in]
-    mov ecx, info
-    mov edx, 0xfff
+    mov ecx, info ;buffer pointer
+    mov edx, 0xfff ;buffer length
     int 0x80
     ret
 _closeFile:
@@ -31,7 +31,7 @@ file_dec_text:
 	pop ecx
 	push info
 	push eax
-	call decode_b64
+	call decodeFun
 	add esp, 8
 	mov [out_info], eax
 	mov [count], ebx
@@ -74,7 +74,7 @@ file_enc_text:
 	pop ecx
 	push info
 	push eax
-	call encode_b64
+	call encodefunc
 	add esp, 12
 
 	
@@ -124,7 +124,6 @@ _print_in_file:
 	
     mov  [fd_out], eax
 
-	
 
     mov eax, 4 ;sys_write
     mov ebx, [fd_out]
@@ -132,7 +131,5 @@ _print_in_file:
     mov edx, [count]
     int 80h
 
-	mov eax, [fd_out]
-	mov [fd_in], eax
-	;call _closeFile
+
     ret

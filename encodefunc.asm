@@ -4,7 +4,7 @@ enc_text:			; encoding routine if text is provided
 	pop ecx
 	push dword [ebp + 16]
 	push eax
-	call encode_b64
+	call encodefunc
 	add esp, 12
 
 	mov [out_info], eax
@@ -73,7 +73,7 @@ there:
 
 encode_loop:
 	cmp dword [ebp + 8], 0		
-	je pad_result			
+	je padding_result			
 	xor eax, eax
 	mov ah, byte [esi]		
 	inc esi
@@ -130,7 +130,5 @@ encoded:
 	leave
 	ret
 
-stop:		
-	call exit
-	ret
+
 

@@ -4,7 +4,7 @@ dec_text:
         pop ecx
 	push dword [ebp + 16]
 	push eax
-	call decode_b64
+	call decodeFun
 	add esp, 8
 	mov [out_info], eax
 	mov [count], ebx

@@ -3,3 +3,5 @@ test*
 *.bin
 *.out
 x64.inc
+.vscode\*
+.vscode
